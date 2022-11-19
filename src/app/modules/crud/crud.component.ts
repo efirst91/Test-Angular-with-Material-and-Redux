@@ -1,25 +1,30 @@
 import {Component, OnInit} from '@angular/core';
-import {ListService} from "../../shared/services/list/list.service";
-import {GenericResponse} from "../../shared/interfaces/api-response";
-import {mapToResponse} from "../../shared/utils/functions/response";
-import {TableColumns} from "../../shared/interfaces/table-columns";
-import {Field} from "../../shared/utils/enums/enums";
+import {ListService} from "../../shared/core/services/list/list.service";
+import {mapToResponse} from "../../shared/core/utils/functions/response";
+import {Field} from "../../shared/core/utils/enums/enums";
 import {MatDialog} from "@angular/material/dialog";
 import {EditComponent} from "./edit/edit.component";
 import {MatDialogConfig} from "@angular/material/dialog/dialog-config";
-import {ActionFunction, DialogDataCustom} from "../../shared/interfaces/actions-functions";
-import {Product} from "../../shared/interfaces/product";
+import {EditService} from "../../shared/core/services/edit/edit.service";
+import {Observable, Subject} from "rxjs";
+import {NotificationsService} from "../../shared/core/services/notification/notifications.service";
+import {GenericResponse} from "../../shared/core/interfaces/api-response";
+import {TableColumns} from "../../shared/core/interfaces/table-columns";
+import {ActionFunction, DialogDataCustom} from "../../shared/core/interfaces/actions-functions";
+import {Product} from "../../shared/core/interfaces/product";
 
 @Component({
   selector: 'app-crud',
   templateUrl: './crud.component.html',
-  styleUrls: ['./crud.component.css']
+  styleUrls: ['./crud.component.scss']
 })
 export class CrudComponent implements OnInit {
 
   constructor(
     private _listService: ListService,
-    private _dialog: MatDialog
+    private _editService: EditService,
+    private _dialog: MatDialog,
+    private _notificationService: NotificationsService
   ) {
     this.createFunctions();
   }
@@ -30,6 +35,10 @@ export class CrudComponent implements OnInit {
   public columns!: TableColumns[];
   public Field?: typeof Field;
   private actionFunction!: ActionFunction;
+
+  public subjectAction: Subject<void> = new Subject<void>();
+  public $updateTable: Observable<void> = this.subjectAction.asObservable();
+  public selectedElement!: GenericResponse;
 
   /**
    * Action function
@@ -78,7 +87,7 @@ export class CrudComponent implements OnInit {
         field: 'serial_number'
       },
       {
-        name: 'Acciones',
+        name: '',
         field: 'actions'
       }
     ]
@@ -86,30 +95,75 @@ export class CrudComponent implements OnInit {
 
   /**
    * Delete an element from db
-   * @param row selected row
+   * @param {String} value selected row
+   * @param {Boolean} valid form valid
    */
   public onDelete(value: string, valid: boolean): void {
-
+    if (valid && value === 'ok') {
+      this.loadingData = true;
+      this._editService.deleteElement(this.selectedElement.name).subscribe(
+        {
+          next: () => {
+            this._notificationService.openMessage('Se eliminó el producto correctamente', 'Eliminar');
+            this.subjectAction.next();
+          },
+          error: () => {
+            this._notificationService.openMessage('Error al eliminar el producto', 'Eliminar');
+            this.loadingData = false;
+          }
+        }
+      )
+    }
   }
 
   /**
    * Edit selected element from db
-   * @param row selected row
+   * @param {Product} formValue form value
+   * @param {Boolean} valid form valid
    */
   public onEdit(formValue: Product, valid: boolean): void {
-
+    if (valid) {
+      const body: GenericResponse = {
+        ...this.selectedElement,
+        product: formValue
+      }
+      this.loadingData = true;
+      this._editService.updateProduct(body).subscribe(
+        {
+          next: () => {
+            this._notificationService.openMessage('Se modificó el producto correctamente', 'Modificar');
+            this.subjectAction.next();
+          },
+          error: () => {
+            this._notificationService.openMessage('Error al modificar el producto', 'Modificar');
+            this.loadingData = false;
+          }
+        }
+      )
+    }
   }
 
   /**
    * Add new element to db
+   * @param {Product} formValue form value
+   * @param {Boolean} valid form valid
    */
   public onAdd(formValue: Product, valid: boolean): void {
-    // const dialogConf: MatDialogConfig = {
-    //   width:
-    // }
-    // this._dialog.open(EditComponent, {
-    //   i
-    // })
+    if (valid) {
+      this.loadingData = true;
+      this._editService.addNewProduct(formValue).subscribe(
+        {
+          next: () => {
+            this._notificationService.openMessage('Se adicionó el producto correctamente', 'Adicionar');
+            this.subjectAction.next();
+          },
+          error: () => {
+            this._notificationService.openMessage('Error al adicionar el producto', 'Adicionar');
+            this.loadingData = false;
+          }
+        }
+      )
+    }
   }
 
   /**
@@ -128,13 +182,44 @@ export class CrudComponent implements OnInit {
   }
 
   /**
+   * Subscription to the next of the subject
+   * @see {Subject} subjectAction
+   * @private
+   */
+  private subscribeToUpdate(): void {
+    this.$updateTable.subscribe(
+      {
+        next: () => this.getAllProducts()
+      }
+    )
+  }
+
+  /**
+   * Update table values
+   * @private
+   */
+  public onUpdate(): void {
+    this.loadingData = true;
+    this.subjectAction.next();
+  }
+
+  /**
+   * Delete all values
+   */
+  public deleteAll(): void {
+
+  }
+
+  /**
    * Show the correct action to be executed with the modal
    * @param action current action selected from template
    * @param row selected row if needed
    */
   public onAction(action: string, row?: GenericResponse) {
+    this.selectedElement = row as GenericResponse;
     const data: DialogDataCustom = {
       type: action,
+      row: row ? row : null,
       title: this.getTitle(action),
       fn: this.actionFunction[action]
     }
@@ -146,7 +231,8 @@ export class CrudComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllProducts();
+    this.subscribeToUpdate();
+    this.subjectAction.next();
     this.setColumns();
   }
 

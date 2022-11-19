@@ -17,6 +17,8 @@ import {EditComponent} from './edit/edit.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {NotificationsService} from "../../shared/core/services/notification/notifications.service";
 
 
 @NgModule({
@@ -40,7 +42,11 @@ import {MatInputModule} from "@angular/material/input";
     MatFormFieldModule,
     FormsModule,
     ReactiveFormsModule,
-    MatInputModule
+    MatInputModule,
+    MatSnackBarModule
+  ],
+  providers: [
+    NotificationsService
   ]
 })
 export class CrudModule {
