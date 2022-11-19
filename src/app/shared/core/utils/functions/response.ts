@@ -1,5 +1,6 @@
 import {GenericResponse} from "../../interfaces/api-response";
 import {Product} from "../../interfaces/product";
+import {ActionFunction} from "../../interfaces/actions-functions";
 
 
 /**
@@ -16,4 +17,20 @@ export function mapToResponse(response: {}): GenericResponse[] {
     result.push(newItem);
   }
   return result;
+}
+
+
+/**
+ * Get correct title for dialog
+ * @param action action to be executed
+ * @private
+ */
+export function getTitle(action: string): string {
+  const titles: ActionFunction = {
+    New: () => 'Nuevo producto',
+    Edit: () => 'Modificar producto',
+    Delete: () => 'Eliminar producto'
+  }
+
+  return titles[action]();
 }
