@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {SpinnerConf} from "../../core/interfaces/spinner-conf";
 
 @Component({
@@ -6,10 +6,7 @@ import {SpinnerConf} from "../../core/interfaces/spinner-conf";
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss']
 })
-export class LoadingComponent implements OnInit {
-
-  constructor() {
-  }
+export class LoadingComponent {
 
   public spinnerConf: SpinnerConf = {
     color: 'primary',
@@ -22,9 +19,6 @@ export class LoadingComponent implements OnInit {
     if (config) {
       this.spinnerConf = config
     }
-  }
-
-  ngOnInit(): void {
   }
 
 }
