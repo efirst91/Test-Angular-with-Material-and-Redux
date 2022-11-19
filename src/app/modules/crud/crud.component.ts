@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ListService} from "../../shared/core/services/list/list.service";
-import {mapToResponse} from "../../shared/core/utils/functions/response";
+import {getTitle, mapToResponse} from "../../shared/core/utils/functions/response";
 import {Field} from "../../shared/core/utils/enums/enums";
 import {MatDialog} from "@angular/material/dialog";
 import {EditComponent} from "./edit/edit.component";
@@ -60,7 +60,14 @@ export class CrudComponent implements OnInit {
     this._listService.getAllProduct().subscribe(
       {
         next: response => {
-          this.dataSource = mapToResponse(response);
+          if (response !== null) {
+            this.dataSource = mapToResponse(response);
+          }
+
+          if (response === null) {
+            this.dataSource = [];
+          }
+
           this.loadingData = false;
         }
       }
@@ -166,20 +173,6 @@ export class CrudComponent implements OnInit {
     }
   }
 
-  /**
-   * Get correct title for dialog
-   * @param action action to be executed
-   * @private
-   */
-  private getTitle(action: string): string {
-    const titles: ActionFunction = {
-      New: () => 'Nuevo producto',
-      Edit: () => 'Modificar producto',
-      Delete: () => 'Eliminar producto'
-    }
-
-    return titles[action]();
-  }
 
   /**
    * Subscription to the next of the subject
@@ -220,7 +213,7 @@ export class CrudComponent implements OnInit {
     const data: DialogDataCustom = {
       type: action,
       row: row ? row : null,
-      title: this.getTitle(action),
+      title: getTitle(action),
       fn: this.actionFunction[action]
     }
     const modalConf: MatDialogConfig = {
