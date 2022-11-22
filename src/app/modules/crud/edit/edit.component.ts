@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {Actions} from "../../../shared/core/utils/enums/enums";
+import {Actions} from "../../../core/utils/enums/enums";
 import {v4 as uuidv4} from 'uuid';
-import {ActionFunction, DialogDataCustom} from "../../../shared/core/interfaces/actions-functions";
+import {ActionFunction, DialogDataCustom} from "../../../core/interfaces/actions-functions";
 
 @Component({
   selector: 'app-edit',

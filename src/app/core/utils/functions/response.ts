@@ -6,17 +6,22 @@ import {ActionFunction} from "../../interfaces/actions-functions";
 /**
  * Map the response to correct data
  */
-export function mapToResponse(response: {}): GenericResponse[] {
-  const result: GenericResponse[] = [];
+export function mapToResponse(response: {}): Product[] {
+  const products: Product[] = [];
   const entries = Object.entries(response);
   for (const entry of entries) {
-    const newItem: GenericResponse = {
-      name: entry[0],
-      product: entry[1] as Product
-    }
-    result.push(newItem);
+    const itemEntry = entry[1] as Product;
+    const newProd: Product =
+      {
+        name: itemEntry.name,
+        id: itemEntry.id,
+        serial_number: itemEntry.serial_number,
+        price: itemEntry.price
+      }
+    newProd.default_name = entry[0];
+    products.push(entry[1] as Product)
   }
-  return result;
+  return products;
 }
 
 

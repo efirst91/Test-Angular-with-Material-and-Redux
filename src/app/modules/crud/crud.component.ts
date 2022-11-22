@@ -1,17 +1,20 @@
 import {Component, OnInit} from '@angular/core';
-import {ListService} from "../../shared/core/services/list/list.service";
-import {getTitle, mapToResponse} from "../../shared/core/utils/functions/response";
-import {Field} from "../../shared/core/utils/enums/enums";
+import {ListService} from "../../core/services/list/list.service";
+import {getTitle, mapToResponse} from "../../core/utils/functions/response";
+import {Field} from "../../core/utils/enums/enums";
 import {MatDialog} from "@angular/material/dialog";
 import {EditComponent} from "./edit/edit.component";
 import {MatDialogConfig} from "@angular/material/dialog/dialog-config";
-import {EditService} from "../../shared/core/services/edit/edit.service";
+import {EditService} from "../../core/services/edit/edit.service";
 import {Observable, Subject} from "rxjs";
-import {NotificationsService} from "../../shared/core/services/notification/notifications.service";
-import {GenericResponse} from "../../shared/core/interfaces/api-response";
-import {TableColumns} from "../../shared/core/interfaces/table-columns";
-import {ActionFunction, DialogDataCustom} from "../../shared/core/interfaces/actions-functions";
-import {Product} from "../../shared/core/interfaces/product";
+import {NotificationsService} from "../../core/services/notification/notifications.service";
+import {GenericResponse} from "../../core/interfaces/api-response";
+import {TableColumns} from "../../core/interfaces/table-columns";
+import {ActionFunction, DialogDataCustom} from "../../core/interfaces/actions-functions";
+import {Product} from "../../core/interfaces/product";
+import {Store} from "@ngrx/store";
+import {loadProducts} from "../../state/actions/product-list.actions";
+import {selectProducts} from "../../state/selectors/product-list.selectors";
 
 @Component({
   selector: 'app-crud',
@@ -24,7 +27,8 @@ export class CrudComponent implements OnInit {
     private _listService: ListService,
     private _editService: EditService,
     private _dialog: MatDialog,
-    private _notificationService: NotificationsService
+    private _notificationService: NotificationsService,
+    private _store: Store<any>
   ) {
     this.createFunctions();
   }
@@ -61,7 +65,7 @@ export class CrudComponent implements OnInit {
       {
         next: response => {
           if (response !== null) {
-            this.dataSource = mapToResponse(response);
+            // this.dataSource = mapToResponse(response);
           }
 
           if (response === null) {
@@ -108,18 +112,19 @@ export class CrudComponent implements OnInit {
   public onDelete(value: string, valid: boolean): void {
     if (valid && value === 'ok') {
       this.loadingData = true;
-      this._editService.deleteElement(this.selectedElement.name).subscribe(
-        {
-          next: () => {
-            this._notificationService.openMessage('Se eliminó el producto correctamente', 'Eliminar');
-            this.subjectAction.next();
-          },
-          error: () => {
-            this._notificationService.openMessage('Error al eliminar el producto', 'Eliminar');
-            this.loadingData = false;
-          }
-        }
-      )
+      // const id = String(this.selectedElement.product.default_name)
+      // this._editService.deleteElement(id).subscribe(
+      //   {
+      //     next: () => {
+      //       this._notificationService.openMessage('Se eliminó el producto correctamente', 'Eliminar');
+      //       this.subjectAction.next();
+      //     },
+      //     error: () => {
+      //       this._notificationService.openMessage('Error al eliminar el producto', 'Eliminar');
+      //       this.loadingData = false;
+      //     }
+      //   }
+      // )
     }
   }
 
@@ -135,18 +140,18 @@ export class CrudComponent implements OnInit {
         product: formValue
       }
       this.loadingData = true;
-      this._editService.updateProduct(body).subscribe(
-        {
-          next: () => {
-            this._notificationService.openMessage('Se modificó el producto correctamente', 'Modificar');
-            this.subjectAction.next();
-          },
-          error: () => {
-            this._notificationService.openMessage('Error al modificar el producto', 'Modificar');
-            this.loadingData = false;
-          }
-        }
-      )
+      // this._editService.updateProduct(body).subscribe(
+      //   {
+      //     next: () => {
+      //       this._notificationService.openMessage('Se modificó el producto correctamente', 'Modificar');
+      //       this.subjectAction.next();
+      //     },
+      //     error: () => {
+      //       this._notificationService.openMessage('Error al modificar el producto', 'Modificar');
+      //       this.loadingData = false;
+      //     }
+      //   }
+      // )
     }
   }
 
@@ -157,19 +162,19 @@ export class CrudComponent implements OnInit {
    */
   public onAdd(formValue: Product, valid: boolean): void {
     if (valid) {
-      this.loadingData = true;
-      this._editService.addNewProduct(formValue).subscribe(
-        {
-          next: () => {
-            this._notificationService.openMessage('Se adicionó el producto correctamente', 'Adicionar');
-            this.subjectAction.next();
-          },
-          error: () => {
-            this._notificationService.openMessage('Error al adicionar el producto', 'Adicionar');
-            this.loadingData = false;
-          }
-        }
-      )
+      // this.loadingData = true;
+      // this._editService.addNewProduct(formValue).subscribe(
+      //   {
+      //     next: () => {
+      //       this._notificationService.openMessage('Se adicionó el producto correctamente', 'Adicionar');
+      //       this.subjectAction.next();
+      //     },
+      //     error: () => {
+      //       this._notificationService.openMessage('Error al adicionar el producto', 'Adicionar');
+      //       this.loadingData = false;
+      //     }
+      //   }
+      // )
     }
   }
 
@@ -184,6 +189,13 @@ export class CrudComponent implements OnInit {
       {
         next: () => this.getAllProducts()
       }
+    )
+  }
+
+  private storeGestions(): void {
+    this._store.dispatch(loadProducts());
+    this._store.select(selectProducts).subscribe(
+      value => console.log('esto es lo que tiene un store', value)
     )
   }
 
@@ -226,6 +238,8 @@ export class CrudComponent implements OnInit {
   ngOnInit(): void {
     this.subscribeToUpdate();
     this.subjectAction.next();
+    this.storeGestions();
+
     this.setColumns();
   }
 

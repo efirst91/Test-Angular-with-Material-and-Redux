@@ -3,4 +3,5 @@ export interface Product {
   name: string;
   price: number;
   serial_number: string;
+  default_name?: string;
 }
