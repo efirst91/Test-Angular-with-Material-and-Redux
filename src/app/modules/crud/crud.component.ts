@@ -73,7 +73,7 @@ export class CrudComponent implements OnInit, OnDestroy {
         field: 'price'
       },
       {
-        name: 'Numero de serie',
+        name: 'Número de serie',
         field: 'serial_number'
       },
       {
