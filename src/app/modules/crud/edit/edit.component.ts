@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {Actions} from "../../../core/utils/enums/enums";
+import {ActionsTable} from "../../../core/utils/enums/enums";
 import {v4 as uuidv4} from 'uuid';
 import {ActionFunction, DialogDataCustom} from "../../../core/interfaces/actions-functions";
 
@@ -44,9 +44,9 @@ export class EditComponent implements OnInit {
    */
   private validateModify(): void {
     this.formProduct.patchValue({
-      name: this.data.row?.product.name,
-      price: this.data.row?.product.price,
-      serial_number: this.data.row?.product.serial_number
+      name: this.data.row?.name,
+      price: this.data.row?.price,
+      serial_number: this.data.row?.serial_number
     })
   }
 
@@ -79,8 +79,8 @@ export class EditComponent implements OnInit {
    * @see createFunctions
    */
   public onAccept(): void {
-    if (this.data.type !== Actions.DELETE) {
-      const uid = this.data.type === Actions.EDIT ? this.data.row?.product.id : uuidv4();
+    if (this.data.type !== ActionsTable.DELETE) {
+      const uid = this.data.type === ActionsTable.EDIT ? this.data.row?.id : uuidv4();
       this.formProduct.get('id')?.setValue(uid);
       this.data.fn(this.formProduct.value, this.formProduct.valid);
 

@@ -15,28 +15,42 @@ export const loadErrorProducts = createAction(
 )
 
 export const addProduct = createAction(
-  '[Product] Product has been added',
+  '[Product] Adding product',
   props<{ product: Product }>()
 )
 
-export const addingProductError = createAction(
+export const addProductOk = createAction(
+  '[Product] Product has been added',
+  props<{ value: string | null }>()
+)
+
+export const addingProductKo = createAction(
   '[Product] An error has occurred when add product'
 )
 
 export const modifyProduct = createAction(
-  '[Product] Product has been modified',
+  '[Product] Modifying product',
   props<{ product: Product }>()
 )
 
-export const modifyProductError = createAction(
+export const modifyProductOk = createAction(
+  '[Product] Product has been modified',
+  props<{product: Product}>()
+)
+
+export const modifyProductKo= createAction(
   '[Product] An error has occurred when modifying product '
 )
 
 export const deleteProduct = createAction(
-  '[Product] Product has been deleted',
+  '[Product] Deleting product',
   props<{ id: string }>()
 )
 
-export const deleteProductError = createAction(
+export const deleteProductOk = createAction(
+  '[Product] Product has been deleted',
+)
+
+export const deleteProductKo = createAction(
   '[Product] An error has occurred when delete a product'
 )

@@ -5,6 +5,7 @@ import * as ProductListActions from '../actions/product-list.actions';
 export const initialState: InitialCustomState = {
   loading: false,
   error: false,
+  value: null,
   products: []
 }
 
@@ -18,5 +19,38 @@ export const productsReducer = createReducer(
   }),
   on(ProductListActions.loadErrorProducts, (state) => {
     return {...state, loading: false, error: true}
-  })
+  }),
+  on(ProductListActions.addProduct, (state, {product}) => {
+    return {...state, loading: true, products: [...state.products, product]}
+  }),
+  on(ProductListActions.addProductOk, (state, {value}) => {
+    return {...state, loading: false, value}
+  }),
+  on(ProductListActions.addingProductKo, (state) => {
+    return {...state, loading: false, error: true}
+  }),
+  on(ProductListActions.modifyProduct, (state, {product}) => {
+    const indexToModify = state.products.findIndex(oldProduct => oldProduct.default_name === product.default_name);
+    const productsCopy = [...state.products];
+    productsCopy[indexToModify] = product;
+    return {...state, loading: true, products: [...productsCopy]}
+  }),
+  on(ProductListActions.modifyProductOk, (state, {product}) => {
+    return {...state, loading: false, product}
+  }),
+  on(ProductListActions.modifyProductKo, (state) => {
+    return {...state, loading: false, error: true}
+  }),
+  on(ProductListActions.deleteProduct, (state, {id}) => {
+    const indexToDelete = state.products.findIndex(oldProduct => oldProduct.default_name === id);
+    const resulArray = [...state.products];
+    resulArray.splice(indexToDelete, 1);
+    return {...state, loading: true, products: [...resulArray]}
+  }),
+  on(ProductListActions.deleteProductOk, (state) => {
+    return {...state, loading: false}
+  }),
+  on(ProductListActions.deleteProductKo, (state) => {
+    return {...state, loading: false, error: true}
+  }),
 )

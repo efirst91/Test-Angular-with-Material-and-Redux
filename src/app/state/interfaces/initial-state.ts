@@ -4,4 +4,7 @@ export interface InitialCustomState {
   loading: boolean;
   error: boolean;
   products: Product[];
+  value?: string | null,
+  product?: Product
+
 }
