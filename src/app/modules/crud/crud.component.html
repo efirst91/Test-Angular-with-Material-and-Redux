@@ -8,11 +8,12 @@
   <mat-card-content fxLayout="row" fxLayoutAlign="center center">
     <section class="card-crud__content section-two w-100">
       <div class="section-two__btn-add mb-2" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="1rem">
-        <button mat-mini-fab color="primary" aria-label="Add buttom crud" (click)="onAction(ActionsTable.NEW)">
+        <button mat-mini-fab color="primary" aria-label="Add buttom crud" matTooltip="Adicionar nuevo producto"
+                (click)="onAction(ActionsTable.NEW)">
           <mat-icon>add</mat-icon>
         </button>
 
-        <button mat-mini-fab color="primary" aria-label="Update buttom crud" (click)="onUpdate()">
+        <button mat-mini-fab color="primary" aria-label="Update buttom crud" matTooltip="Actualizar tabla" (click)="onUpdate()">
           <mat-icon>update</mat-icon>
         </button>
       </div>
@@ -26,12 +27,12 @@
 
           <ng-template #btnActions>
             <td mat-cell *matCellDef="let element">
-              <button class="btn-hide" mat-icon-button color="primary" aria-label="List buttom crud"
+              <button class="btn-hide" mat-icon-button color="primary" aria-label="List buttom crud" matTooltip="Editar producto"
                       (click)="onAction(ActionsTable.EDIT,element)">
                 <mat-icon>edit</mat-icon>
               </button>
 
-              <button class="btn-hide" mat-icon-button color="primary" aria-label="Delete buttom crud"
+              <button class="btn-hide" mat-icon-button color="primary" aria-label="Delete buttom crud" matTooltip="Eliminar producto"
                       (click)="onAction(ActionsTable.DELETE,element)">
                 <mat-icon>delete</mat-icon>
               </button>
