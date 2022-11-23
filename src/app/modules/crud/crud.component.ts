@@ -115,7 +115,6 @@ export class CrudComponent implements OnInit, OnDestroy {
    */
   public onAdd(formValue: Product, valid: boolean): void {
     if (valid) {
-      formValue.default_name = this.selectedElement.default_name;
       this._store.dispatch(addProduct({product: formValue}))
     }
   }
