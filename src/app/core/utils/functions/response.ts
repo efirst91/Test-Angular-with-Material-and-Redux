@@ -20,18 +20,21 @@ import {ActionFunction} from "../../interfaces/actions-functions";
 export function mapToResponse(response: {}): Product[] {
   const products: Product[] = [];
   const entries = Object.entries(response);
-  for (const entry of entries) {
-    const itemEntry = entry[1] as Product;
-    const newProd: Product =
-      {
-        name: itemEntry.name,
-        id: itemEntry.id,
-        serial_number: itemEntry.serial_number,
-        price: itemEntry.price
-      }
-    newProd.default_name = entry[0];
-    products.push(newProd)
+  if (entries?.length > 0) {
+    for (const entry of entries) {
+      const itemEntry = entry[1] as Product;
+      const newProd: Product =
+        {
+          name: itemEntry.name,
+          id: itemEntry.id,
+          serial_number: itemEntry.serial_number,
+          price: itemEntry.price
+        }
+      newProd.default_name = entry[0];
+      products.push(newProd)
+    }
   }
+
   return products;
 }
 

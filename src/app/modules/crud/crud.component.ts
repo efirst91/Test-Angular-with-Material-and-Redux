@@ -1,19 +1,20 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ListService} from "../../core/services/list/list.service";
-import {getTitle} from "../../core/utils/functions/response";
-import {ActionsTable, Field} from "../../core/utils/enums/enums";
+import {ListService} from "@core/services/list/list.service";
 import {MatDialog} from "@angular/material/dialog";
-import {EditComponent} from "./edit/edit.component";
 import {MatDialogConfig} from "@angular/material/dialog/dialog-config";
-import {EditService} from "../../core/services/edit/edit.service";
 import {Subject, takeUntil} from "rxjs";
-import {NotificationsService} from "../../core/services/notification/notifications.service";
-import {TableColumns} from "../../core/interfaces/table-columns";
-import {ActionFunction, DialogDataCustom} from "../../core/interfaces/actions-functions";
-import {Product} from "../../core/interfaces/product";
 import {Store} from "@ngrx/store";
-import {addProduct, deleteProduct, loadProducts, modifyProduct} from "../../state/actions/product-list.actions";
-import {selectProducts} from "../../state/selectors/product-list.selectors";
+
+import {getTitle} from "@core/utils/functions/response";
+import {ActionsTable, Field} from "@core/utils/enums/enums";
+import {EditService} from "@core/services/edit/edit.service";
+import {NotificationsService} from "@core/services/notification/notifications.service";
+import {TableColumns} from "@core/interfaces/table-columns";
+import {ActionFunction, DialogDataCustom} from "@core/interfaces/actions-functions";
+import {Product} from "@core/interfaces/product";
+import {addProduct, deleteProduct, loadProducts, modifyProduct} from "@store/actions/product-list.actions";
+import {errorAction, loadingAction, selectProducts} from "@store/selectors/product-list.selectors";
+import {EditComponent} from "./edit/edit.component";
 
 @Component({
   selector: 'app-crud',
@@ -102,7 +103,6 @@ export class CrudComponent implements OnInit, OnDestroy {
    */
   public onEdit(formValue: Product, valid: boolean): void {
     if (valid) {
-      this.loadingData = true;
       formValue.default_name = this.selectedElement.default_name;
       this._store.dispatch(modifyProduct({product: formValue}))
     }
@@ -115,7 +115,6 @@ export class CrudComponent implements OnInit, OnDestroy {
    */
   public onAdd(formValue: Product, valid: boolean): void {
     if (valid) {
-      this.loadingData = true;
       this._store.dispatch(addProduct({product: formValue}))
     }
   }
@@ -133,8 +132,50 @@ export class CrudComponent implements OnInit, OnDestroy {
             if (products?.length) {
               this.dataSource = products;
               this.loadingData = false;
+            } else {
+              this.dataSource = [];
+              this.loadingData = false;
             }
-          }
+          },
+          error: () => this._notificationService.openMessage('Ha ocurrido un error, favor de revisar la red o los datos introducidos.', 'error')
+        }
+      );
+
+    this.getErrorStatus();
+    this.loadingStatus();
+  }
+
+  /**
+   * Get error status flag from store
+   * @private
+   */
+  private getErrorStatus(): void {
+    this._store.select(errorAction)
+      .pipe(takeUntil(this.destroy))
+      .subscribe(
+        {
+          next: (error: boolean) => {
+            if (!error) {
+              this._notificationService.openMessage('Acción realizada correctamente', 'success');
+            } else {
+              this._notificationService.openMessage('Ha ocurrido un error a la hora de realizar la acción', 'error');
+            }
+          },
+          error: () => this._notificationService.openMessage('Ha ocurrido un error, favor de revisar la red o los datos introducidos.', 'error')
+        }
+      )
+  }
+
+  /**
+   * Loading data status from store
+   * @private
+   */
+  private loadingStatus(): void {
+    this._store.select(loadingAction)
+      .pipe(takeUntil(this.destroy))
+      .subscribe(
+        {
+          next: value => this.loadingData = value
         }
       )
   }
@@ -144,16 +185,7 @@ export class CrudComponent implements OnInit, OnDestroy {
    * @private
    */
   public onUpdate(): void {
-    this.loadingData = true;
     this._store.dispatch(loadProducts());
-  }
-
-  /**
-   * Delete all values
-   */
-  public deleteAll(): void {
-    this.loadingData = true;
-    this._store.dispatch(deleteProduct({id: 'products'}))
   }
 
   /**

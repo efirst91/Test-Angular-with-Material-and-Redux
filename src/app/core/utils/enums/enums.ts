@@ -7,3 +7,7 @@ export enum ActionsTable {
   EDIT = 'Edit',
   DELETE = 'Delete'
 }
+
+export enum DBCollectionName {
+  PRODUCTS = 'products'
+}

@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {of} from 'rxjs';
+import {EMPTY, of} from 'rxjs';
 import {map, mergeMap, catchError} from 'rxjs/operators';
-import {ListService} from "../../core/services/list/list.service";
-import {mapToResponse} from "../../core/utils/functions/response";
-import {EditService} from "../../core/services/edit/edit.service";
+import {ListService} from "@core/services/list/list.service";
+import {mapToResponse} from "@core/utils/functions/response";
+import {EditService} from "@core/services/edit/edit.service";
 import * as ProductListActions from '../actions/product-list.actions';
 
 
 @Injectable()
-export class MovieEffects {
+export class ProductListEffects {
 
   loadProducts$ = createEffect(() => this._actions$.pipe(
       ofType(ProductListActions.loadProducts),
@@ -18,7 +18,7 @@ export class MovieEffects {
           map(response =>
             (ProductListActions.loadedProducts({products: mapToResponse(response)}))
           ),
-          catchError(() => of(ProductListActions.loadErrorProducts))
+          catchError(() => EMPTY)
         ))
     )
   );
@@ -27,8 +27,9 @@ export class MovieEffects {
       ofType(ProductListActions.addProduct),
       mergeMap((newItem) => this._editService.addNewProduct(newItem['product'])
         .pipe(
-          map(value =>
-            (ProductListActions.addProductOk({value}))
+          map(value => {
+              return (ProductListActions.addProductOk({value, error: false}))
+            }
           ),
           catchError(() => of(ProductListActions.addingProductKo))
         ))

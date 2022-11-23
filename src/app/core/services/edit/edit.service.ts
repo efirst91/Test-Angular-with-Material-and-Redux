@@ -1,16 +1,18 @@
 import {Injectable} from '@angular/core';
-import {environment} from "../../../../environments/environment";
+import {environment} from "@environment/environment";
 import {HttpClient} from "@angular/common/http";
 import {Product} from "../../interfaces/product";
 import {Observable} from "rxjs";
 import {GenericResponse} from "../../interfaces/api-response";
+import {DBCollectionName} from "../../utils/enums/enums";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EditService {
   private readonly EXTENSION = '.json'
-  private readonly API_URL = environment.apiUrl + '/products';
+  private readonly DEFAULT_URL = environment.apiUrl
+  private readonly API_URL = this.DEFAULT_URL + '/products';
 
   constructor(
     private _httpClient: HttpClient
@@ -42,6 +44,7 @@ export class EditService {
       price: body.price,
       serial_number: body.serial_number
     }
+    console.log('se va a actualizar ---->', body)
     return this._httpClient.put(`${this.API_URL}/${body.default_name}${this.EXTENSION}`, product)
   }
 
@@ -50,7 +53,8 @@ export class EditService {
    * @param {String} id name of deleted element
    */
   public deleteElement(id: string): Observable<any> {
-    return this._httpClient.delete(`${this.API_URL}/${id}${this.EXTENSION}`);
+    const apiUrl = id === DBCollectionName.PRODUCTS ? `${this.DEFAULT_URL}/${id}` : `${this.API_URL}/${id}`
+    return this._httpClient.delete(`${apiUrl}${this.EXTENSION}`);
   }
 
 

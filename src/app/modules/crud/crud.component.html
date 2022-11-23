@@ -6,7 +6,7 @@
   </mat-card-title>
 
   <mat-card-content fxLayout="row" fxLayoutAlign="center center">
-    <section class="card-crud__content section-two" style="width: 100%">
+    <section class="card-crud__content section-two w-100">
       <div class="section-two__btn-add mb-2" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="1rem">
         <button mat-mini-fab color="primary" aria-label="Add buttom crud" (click)="onAction(ActionsTable.NEW)">
           <mat-icon>add</mat-icon>
@@ -14,10 +14,6 @@
 
         <button mat-mini-fab color="primary" aria-label="Update buttom crud" (click)="onUpdate()">
           <mat-icon>update</mat-icon>
-        </button>
-
-        <button mat-mini-fab color="primary" aria-label="Delete all buttom crud" (click)="deleteAll()">
-          <mat-icon>delete</mat-icon>
         </button>
       </div>
 

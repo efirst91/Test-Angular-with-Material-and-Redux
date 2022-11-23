@@ -1,4 +1,4 @@
-import {Product} from "../../core/interfaces/product";
+import {Product} from "@core/interfaces/product";
 
 export interface InitialCustomState {
   loading: boolean;

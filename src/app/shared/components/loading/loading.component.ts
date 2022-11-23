@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {SpinnerConf} from "../../../core/interfaces/spinner-conf";
+import {SpinnerConf} from "@core/interfaces/spinner-conf";
 
 @Component({
   selector: 'app-loading',

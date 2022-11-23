@@ -24,10 +24,10 @@ export const productsReducer = createReducer(
     return {...state, loading: true, products: [...state.products, product]}
   }),
   on(ProductListActions.addProductOk, (state, {value}) => {
-    return {...state, loading: false, value}
+    return {...state, loading: false, value, error: false}
   }),
-  on(ProductListActions.addingProductKo, (state) => {
-    return {...state, loading: false, error: true}
+  on(ProductListActions.addingProductKo, (state, {error}) => {
+    return {...state, loading: false, error}
   }),
   on(ProductListActions.modifyProduct, (state, {product}) => {
     const indexToModify = state.products.findIndex(oldProduct => oldProduct.default_name === product.default_name);
@@ -36,7 +36,7 @@ export const productsReducer = createReducer(
     return {...state, loading: true, products: [...productsCopy]}
   }),
   on(ProductListActions.modifyProductOk, (state, {product}) => {
-    return {...state, loading: false, product}
+    return {...state, loading: false, error: false, product}
   }),
   on(ProductListActions.modifyProductKo, (state) => {
     return {...state, loading: false, error: true}
@@ -48,7 +48,7 @@ export const productsReducer = createReducer(
     return {...state, loading: true, products: [...resulArray]}
   }),
   on(ProductListActions.deleteProductOk, (state) => {
-    return {...state, loading: false}
+    return {...state, loading: false, error: false}
   }),
   on(ProductListActions.deleteProductKo, (state) => {
     return {...state, loading: false, error: true}

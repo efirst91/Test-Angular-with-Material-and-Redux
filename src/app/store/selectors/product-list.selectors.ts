@@ -8,3 +8,13 @@ export const selectProducts = createSelector(
   select,
   (state: InitialCustomState) => state.products
 )
+
+export const errorAction = createSelector(
+  select,
+  (state: InitialCustomState) => state.error
+)
+
+export const loadingAction = createSelector(
+  select,
+  (state: InitialCustomState) => state.loading
+)

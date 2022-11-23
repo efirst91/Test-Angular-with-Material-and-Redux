@@ -1,5 +1,5 @@
 import {createAction, props} from "@ngrx/store";
-import {Product} from "../../core/interfaces/product";
+import {Product} from "@core/interfaces/product";
 
 export const loadProducts = createAction(
   '[Product list] Load product list'
@@ -21,11 +21,12 @@ export const addProduct = createAction(
 
 export const addProductOk = createAction(
   '[Product] Product has been added',
-  props<{ value: string | null }>()
+  props<{ value: string | null, error: boolean }>()
 )
 
 export const addingProductKo = createAction(
-  '[Product] An error has occurred when add product'
+  '[Product] An error has occurred when add product',
+  props<{ error: boolean }>()
 )
 
 export const modifyProduct = createAction(
@@ -35,10 +36,10 @@ export const modifyProduct = createAction(
 
 export const modifyProductOk = createAction(
   '[Product] Product has been modified',
-  props<{product: Product}>()
+  props<{ product: Product }>()
 )
 
-export const modifyProductKo= createAction(
+export const modifyProductKo = createAction(
   '[Product] An error has occurred when modifying product '
 )
 
