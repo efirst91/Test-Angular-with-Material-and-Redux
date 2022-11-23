@@ -78,7 +78,7 @@ export class EditComponent implements OnInit {
   private createForm(): void {
     this.formProduct = this._fb.group({
       id: [''],
-      name: ['', [Validators.required]],
+      name: ['', [Validators.required, Validators.pattern(ALPHA_NUMERIC_REG_EXP)]],
       price: ['', [Validators.required]],
       serial_number: ['', [Validators.required, Validators.pattern(ALPHA_NUMERIC_REG_EXP)]]
     })
