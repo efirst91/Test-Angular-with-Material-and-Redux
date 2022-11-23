@@ -28,21 +28,21 @@ export class EditService {
       price: body.price,
       serial_number: body.serial_number
     }
-    return this._httpClient.post(this.API_URL + this.EXTENSION, body);
+    return this._httpClient.post(this.API_URL + this.EXTENSION, product);
   }
 
   /**
    * Update selected value
    * @param {GenericResponse} body selected row to update
    */
-  public updateProduct(body: GenericResponse): Observable<any> {
+  public updateProduct(body: Product): Observable<any> {
     const product: Product = {
-      name: body.product.name,
-      id: body.product.id,
-      price: body.product.price,
-      serial_number: body.product.serial_number
+      name: body.name,
+      id: body.id,
+      price: body.price,
+      serial_number: body.serial_number
     }
-    return this._httpClient.put(`${this.API_URL}/${body.product.default_name}${this.EXTENSION}`, product)
+    return this._httpClient.put(`${this.API_URL}/${body.default_name}${this.EXTENSION}`, product)
   }
 
   /**

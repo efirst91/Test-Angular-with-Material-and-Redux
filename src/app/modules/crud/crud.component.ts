@@ -1,19 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ListService} from "../../core/services/list/list.service";
-import {getTitle, mapToResponse} from "../../core/utils/functions/response";
-import {Field} from "../../core/utils/enums/enums";
+import {getTitle} from "../../core/utils/functions/response";
+import {ActionsTable, Field} from "../../core/utils/enums/enums";
 import {MatDialog} from "@angular/material/dialog";
 import {EditComponent} from "./edit/edit.component";
 import {MatDialogConfig} from "@angular/material/dialog/dialog-config";
 import {EditService} from "../../core/services/edit/edit.service";
-import {Observable, Subject} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
 import {NotificationsService} from "../../core/services/notification/notifications.service";
-import {GenericResponse} from "../../core/interfaces/api-response";
 import {TableColumns} from "../../core/interfaces/table-columns";
 import {ActionFunction, DialogDataCustom} from "../../core/interfaces/actions-functions";
 import {Product} from "../../core/interfaces/product";
 import {Store} from "@ngrx/store";
-import {loadProducts} from "../../state/actions/product-list.actions";
+import {addProduct, deleteProduct, loadProducts, modifyProduct} from "../../state/actions/product-list.actions";
 import {selectProducts} from "../../state/selectors/product-list.selectors";
 
 @Component({
@@ -21,7 +20,7 @@ import {selectProducts} from "../../state/selectors/product-list.selectors";
   templateUrl: './crud.component.html',
   styleUrls: ['./crud.component.scss']
 })
-export class CrudComponent implements OnInit {
+export class CrudComponent implements OnInit, OnDestroy {
 
   constructor(
     private _listService: ListService,
@@ -33,16 +32,16 @@ export class CrudComponent implements OnInit {
     this.createFunctions();
   }
 
-  public dataSource!: GenericResponse[];
+  public dataSource!: Product[];
   public loadingData = true;
   public displayedColumns!: string[];
   public columns!: TableColumns[];
-  public Field?: typeof Field;
+  public Field: typeof Field = Field;
+  public ActionsTable: typeof ActionsTable = ActionsTable;
   private actionFunction!: ActionFunction;
 
-  public subjectAction: Subject<void> = new Subject<void>();
-  public $updateTable: Observable<void> = this.subjectAction.asObservable();
-  public selectedElement!: GenericResponse;
+  public destroy: Subject<void> = new Subject();
+  public selectedElement!: Product;
 
   /**
    * Action function
@@ -56,27 +55,6 @@ export class CrudComponent implements OnInit {
     }
   }
 
-  /**
-   * Get al products
-   * @private
-   */
-  private getAllProducts(): void {
-    this._listService.getAllProduct().subscribe(
-      {
-        next: response => {
-          if (response !== null) {
-            // this.dataSource = mapToResponse(response);
-          }
-
-          if (response === null) {
-            this.dataSource = [];
-          }
-
-          this.loadingData = false;
-        }
-      }
-    )
-  }
 
   /**
    * Set displayed columns
@@ -112,19 +90,8 @@ export class CrudComponent implements OnInit {
   public onDelete(value: string, valid: boolean): void {
     if (valid && value === 'ok') {
       this.loadingData = true;
-      // const id = String(this.selectedElement.product.default_name)
-      // this._editService.deleteElement(id).subscribe(
-      //   {
-      //     next: () => {
-      //       this._notificationService.openMessage('Se eliminó el producto correctamente', 'Eliminar');
-      //       this.subjectAction.next();
-      //     },
-      //     error: () => {
-      //       this._notificationService.openMessage('Error al eliminar el producto', 'Eliminar');
-      //       this.loadingData = false;
-      //     }
-      //   }
-      // )
+      const id = this.selectedElement.default_name as string;
+      this._store.dispatch(deleteProduct({id}))
     }
   }
 
@@ -135,23 +102,9 @@ export class CrudComponent implements OnInit {
    */
   public onEdit(formValue: Product, valid: boolean): void {
     if (valid) {
-      const body: GenericResponse = {
-        ...this.selectedElement,
-        product: formValue
-      }
       this.loadingData = true;
-      // this._editService.updateProduct(body).subscribe(
-      //   {
-      //     next: () => {
-      //       this._notificationService.openMessage('Se modificó el producto correctamente', 'Modificar');
-      //       this.subjectAction.next();
-      //     },
-      //     error: () => {
-      //       this._notificationService.openMessage('Error al modificar el producto', 'Modificar');
-      //       this.loadingData = false;
-      //     }
-      //   }
-      // )
+      formValue.default_name = this.selectedElement.default_name;
+      this._store.dispatch(modifyProduct({product: formValue}))
     }
   }
 
@@ -162,41 +115,28 @@ export class CrudComponent implements OnInit {
    */
   public onAdd(formValue: Product, valid: boolean): void {
     if (valid) {
-      // this.loadingData = true;
-      // this._editService.addNewProduct(formValue).subscribe(
-      //   {
-      //     next: () => {
-      //       this._notificationService.openMessage('Se adicionó el producto correctamente', 'Adicionar');
-      //       this.subjectAction.next();
-      //     },
-      //     error: () => {
-      //       this._notificationService.openMessage('Error al adicionar el producto', 'Adicionar');
-      //       this.loadingData = false;
-      //     }
-      //   }
-      // )
+      this.loadingData = true;
+      this._store.dispatch(addProduct({product: formValue}))
     }
   }
 
-
   /**
-   * Subscription to the next of the subject
-   * @see {Subject} subjectAction
+   * Get all product from store
    * @private
    */
-  private subscribeToUpdate(): void {
-    this.$updateTable.subscribe(
-      {
-        next: () => this.getAllProducts()
-      }
-    )
-  }
-
   private storeGestions(): void {
     this._store.dispatch(loadProducts());
-    this._store.select(selectProducts).subscribe(
-      value => console.log('esto es lo que tiene un store', value)
-    )
+    this._store.select(selectProducts)
+      .pipe(takeUntil(this.destroy))
+      .subscribe({
+          next: (products: Product[]) => {
+            if (products?.length) {
+              this.dataSource = products;
+              this.loadingData = false;
+            }
+          }
+        }
+      )
   }
 
   /**
@@ -205,14 +145,15 @@ export class CrudComponent implements OnInit {
    */
   public onUpdate(): void {
     this.loadingData = true;
-    this.subjectAction.next();
+    this._store.dispatch(loadProducts());
   }
 
   /**
    * Delete all values
    */
   public deleteAll(): void {
-
+    this.loadingData = true;
+    this._store.dispatch(deleteProduct({id: 'products'}))
   }
 
   /**
@@ -220,8 +161,8 @@ export class CrudComponent implements OnInit {
    * @param action current action selected from template
    * @param row selected row if needed
    */
-  public onAction(action: string, row?: GenericResponse) {
-    this.selectedElement = row as GenericResponse;
+  public onAction(action: string, row?: Product) {
+    this.selectedElement = row as Product;
     const data: DialogDataCustom = {
       type: action,
       row: row ? row : null,
@@ -236,11 +177,13 @@ export class CrudComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscribeToUpdate();
-    this.subjectAction.next();
     this.storeGestions();
-
     this.setColumns();
+  }
+
+  ngOnDestroy() {
+    this.destroy.next();
+    this.destroy.complete();
   }
 
 }

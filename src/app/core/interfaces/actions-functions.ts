@@ -1,4 +1,4 @@
-import {GenericResponse} from "./api-response";
+import {Product} from "./product";
 
 export interface ActionFunction {
   [key: string]: Function
@@ -7,6 +7,6 @@ export interface ActionFunction {
 export interface DialogDataCustom {
   type: string;
   title: string;
-  row: GenericResponse | null;
+  row: Product | null;
   fn: Function;
 }

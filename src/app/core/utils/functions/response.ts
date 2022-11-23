@@ -1,10 +1,21 @@
-import {GenericResponse} from "../../interfaces/api-response";
 import {Product} from "../../interfaces/product";
 import {ActionFunction} from "../../interfaces/actions-functions";
 
 
 /**
  * Map the response to correct data
+ * @description data come from api with another structure and this method
+ * convert this answer in a correct product data array
+ * @example data from api = {
+ *   -xyz {
+ *     id: asd2,
+ *     name: 'TV',
+ *     price: 450,
+ *     serial_number: asd45
+ *   }
+ * }
+ * @return {Product[]}
+ *
  */
 export function mapToResponse(response: {}): Product[] {
   const products: Product[] = [];
@@ -19,8 +30,10 @@ export function mapToResponse(response: {}): Product[] {
         price: itemEntry.price
       }
     newProd.default_name = entry[0];
-    products.push(entry[1] as Product)
+    products.push(newProd)
   }
+
+  console.log('valor de la respues', products[0])
   return products;
 }
 
