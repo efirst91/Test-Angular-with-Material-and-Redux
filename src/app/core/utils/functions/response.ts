@@ -32,8 +32,6 @@ export function mapToResponse(response: {}): Product[] {
     newProd.default_name = entry[0];
     products.push(newProd)
   }
-
-  console.log('valor de la respues', products[0])
   return products;
 }
 
