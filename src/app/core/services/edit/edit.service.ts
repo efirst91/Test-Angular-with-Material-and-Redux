@@ -44,7 +44,6 @@ export class EditService {
       price: body.price,
       serial_number: body.serial_number
     }
-    console.log('se va a actualizar ---->', body)
     return this._httpClient.put(`${this.API_URL}/${body.default_name}${this.EXTENSION}`, product)
   }
 

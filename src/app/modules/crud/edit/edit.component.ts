@@ -55,7 +55,6 @@ export class EditComponent implements OnInit {
    * @private
    */
   private removeValidators(): void {
-    console.log('estoy llegando aqui al clear validator')
     this.formProduct.get('name')?.clearValidators();
     this.formProduct.get('price')?.clearValidators();
     this.formProduct.get('serial_number')?.clearValidators();
