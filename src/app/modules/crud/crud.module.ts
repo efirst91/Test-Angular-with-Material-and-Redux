@@ -44,7 +44,7 @@ import {CrudComponent} from './crud.component';
     FormsModule,
     ReactiveFormsModule,
     MatInputModule,
-    MatSnackBarModule
+    MatSnackBarModule,
   ],
   providers: [
     NotificationsService

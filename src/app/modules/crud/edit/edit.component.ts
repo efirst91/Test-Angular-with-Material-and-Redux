@@ -1,9 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ActionsTable} from "@core/utils/enums/enums";
 import {v4 as uuidv4} from 'uuid';
 import {ActionFunction, DialogDataCustom} from "@core/interfaces/actions-functions";
+import {ALPHA_NUMERIC_REG_EXP} from "@core/utils/utils";
 
 @Component({
   selector: 'app-edit',
@@ -33,8 +34,7 @@ export class EditComponent implements OnInit {
       },
       Edit: () => this.validateModify(),
       See: () => this.validateSee(),
-      Delete: () => {
-      },
+      Delete: () => this.removeValidators(),
     }
   }
 
@@ -48,6 +48,20 @@ export class EditComponent implements OnInit {
       price: this.data.row?.price,
       serial_number: this.data.row?.serial_number
     })
+  }
+
+  /**
+   * Remove al validator from form
+   * @private
+   */
+  private removeValidators(): void {
+    console.log('estoy llegando aqui al clear validator')
+    this.formProduct.get('name')?.clearValidators();
+    this.formProduct.get('price')?.clearValidators();
+    this.formProduct.get('serial_number')?.clearValidators();
+    this.formProduct.get('name')?.updateValueAndValidity();
+    this.formProduct.get('price')?.updateValueAndValidity();
+    this.formProduct.get('serial_number')?.updateValueAndValidity();
   }
 
   /**
@@ -65,9 +79,9 @@ export class EditComponent implements OnInit {
   private createForm(): void {
     this.formProduct = this._fb.group({
       id: [''],
-      name: [''],
-      price: [''],
-      serial_number: ['']
+      name: ['', [Validators.required]],
+      price: ['', [Validators.required]],
+      serial_number: ['', [Validators.required, Validators.pattern(ALPHA_NUMERIC_REG_EXP)]]
     })
   }
 
