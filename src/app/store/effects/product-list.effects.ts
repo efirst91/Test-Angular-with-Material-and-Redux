@@ -7,7 +7,9 @@ import {mapToResponse} from "@core/utils/functions/response";
 import {EditService} from "@core/services/edit/edit.service";
 import * as ProductListActions from '../actions/product-list.actions';
 
-
+/**
+ * Improve store effects
+ */
 @Injectable()
 export class ProductListEffects {
 
