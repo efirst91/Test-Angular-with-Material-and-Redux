@@ -21,19 +21,19 @@ export const productsReducer = createReducer(
     return {...state, loading: false, error: true}
   }),
   on(ProductListActions.addProduct, (state, {product}) => {
-    return {...state, loading: true, products: [...state.products, product]}
+    return {...state, loading: true, products: [...state.products, product], error: false}
   }),
   on(ProductListActions.addProductOk, (state, {value}) => {
     return {...state, loading: false, value, error: false}
   }),
-  on(ProductListActions.addingProductKo, (state, {error}) => {
-    return {...state, loading: false, error}
+  on(ProductListActions.addingProductKo, (state) => {
+    return {...state, loading: false, error: true}
   }),
   on(ProductListActions.modifyProduct, (state, {product}) => {
     const indexToModify = state.products.findIndex(oldProduct => oldProduct.default_name === product.default_name);
     const productsCopy = [...state.products];
     productsCopy[indexToModify] = product;
-    return {...state, loading: true, products: [...productsCopy]}
+    return {...state, loading: true, products: [...productsCopy], error: false}
   }),
   on(ProductListActions.modifyProductOk, (state, {product}) => {
     return {...state, loading: false, error: false, product}
@@ -45,7 +45,7 @@ export const productsReducer = createReducer(
     const indexToDelete = state.products.findIndex(oldProduct => oldProduct.default_name === id);
     const resulArray = [...state.products];
     resulArray.splice(indexToDelete, 1);
-    return {...state, loading: true, products: [...resulArray]}
+    return {...state, loading: true, products: [...resulArray], error: false}
   }),
   on(ProductListActions.deleteProductOk, (state) => {
     return {...state, loading: false, error: false}
