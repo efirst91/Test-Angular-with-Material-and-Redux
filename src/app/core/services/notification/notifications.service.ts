@@ -18,7 +18,7 @@ export class NotificationsService {
    */
   public openMessage(message: string, type: string, duration?: number): void {
     const snackConf: MatSnackBarConfig = {
-      duration: duration || 1000,
+      duration: duration || 3000,
     }
     this._snackBar.open(message, type, snackConf);
   }
