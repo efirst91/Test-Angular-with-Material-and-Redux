@@ -25,8 +25,7 @@ export const addProductOk = createAction(
 )
 
 export const addingProductKo = createAction(
-  '[Product] An error has occurred when add product',
-  props<{ error: boolean }>()
+  '[Product] An error has occurred when add product'
 )
 
 export const modifyProduct = createAction(
