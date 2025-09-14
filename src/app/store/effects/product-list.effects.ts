@@ -20,7 +20,7 @@ export class ProductListEffects {
           map(response =>
             (ProductListActions.loadedProducts({products: mapToResponse(response)}))
           ),
-          catchError(() => EMPTY)
+          catchError(() => of(ProductListActions.loadErrorProducts()))
         ))
     )
   );
@@ -33,7 +33,7 @@ export class ProductListEffects {
               return (ProductListActions.addProductOk({value, error: false}))
             }
           ),
-          catchError(() => of(ProductListActions.addingProductKo))
+          catchError(() => of(ProductListActions.addingProductKo()))
         ))
     )
   );
@@ -45,7 +45,7 @@ export class ProductListEffects {
           map((product) =>
             (ProductListActions.modifyProductOk({product}))
           ),
-          catchError(() => of(ProductListActions.modifyProductKo))
+          catchError(() => of(ProductListActions.modifyProductKo()))
         ))
     )
   );
@@ -57,7 +57,7 @@ export class ProductListEffects {
           map(() =>
             (ProductListActions.deleteProductOk())
           ),
-          catchError(() => of(ProductListActions.deleteProductKo))
+          catchError(() => of(ProductListActions.deleteProductKo()))
         ))
     )
   );
