@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: "https://test-7d11d-default-rtdb.firebaseio.com"
+  apiUrl: ""
 };
 
 /*
