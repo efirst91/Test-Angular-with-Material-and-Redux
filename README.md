@@ -1,5 +1,5 @@
 # Test Angular with Material and Redux
-Test angular project using material, angular, and redux.
+Test angular project using material, angular, and redux.<br>
 <strong>Note:</strong> The full demo is under develop branch
 <h1>Data base</h1>
 The data base url is firebase data in real time, you can use the real time data base only for test purposes.
